@@ -26,7 +26,7 @@ def index_to_excel(idx):
 def compute_diff(val1, val2):
     if val2 == 0:
         return 0
-    return abs(val1 - val2) / val1
+    return abs(abs(val1 - val2) / val1)
 
 
 def analyze_csv_files(f1, f2, tolerance, skip_lines):
