@@ -12,17 +12,21 @@ DEFAULT_TOLERANCE = 0.02
 
 
 def index_to_excel(idx):
-    assert idx > 0
     len_alphabet = len(ascii_uppercase)
+    #XXX: a bit hackish way to solve this 
+
     if idx < len_alphabet:
         return ascii_uppercase[idx]
     else:
         res = []
-        while idx > len_alphabet:
-            res.append(idx / len_alphabet)
-            idx = idx % len_alphabet
+        while idx >= len_alphabet:
+            res.append(idx / len_alphabet - 1)
+            idx %= len_alphabet
+
+        res.append(idx)
 
         return ''.join(ascii_uppercase[x] for x in res)
+
 
 
 def compute_diff(val1, val2):
