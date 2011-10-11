@@ -1,24 +1,28 @@
 #!/usr/bin/env python2
 import csv
-import logging
 from itertools import izip
 from sys import argv, exit
+from string import ascii_uppercase
 import argparse
 
-# TODO: make it configurable
-# - number of header lines to skip
-# - output format
-# - files to give in input
-# - show the coordinate in excel style for the output
-
-ST = "Value %f in file 1 (line %d) differs by %d from %f in file 2"
+ST = "Value %f in file 1 (row=%d, column=%s) differs by %d from %f in file 2"
 DEFAULT_SKIP_LINES = 1
 
 DEFAULT_TOLERANCE = 0.02
 
-def excel_rows():
-    # probably the first two iterations would be enough
-    pass
+
+def index_to_excel(idx):
+    assert idx > 0
+    len_alphabet = len(ascii_uppercase)
+    if idx < len_alphabet:
+        return ascii_uppercase[idx]
+    else:
+        res = []
+        while idx > len_alphabet:
+            res.append(idx / len_alphabet)
+            idx = idx % len_alphabet
+
+        return ''.join(ascii_uppercase[x] for x in res)
 
 
 def compute_diff(val1, val2):
@@ -37,13 +41,14 @@ def analyze_csv_files(f1, f2, tolerance, skip_lines):
     for i in range(skip_lines):
         r1.next(); r2.next()
 
-    for val1, val2 in izip(r1, r2):
+    # TODO: check if the number of elements are different somehow
+    for row, (val1, val2) in enumerate(izip(r1, r2)):
         for i in range(len(val1)):
             v1, v2 = float(val1[i]), float(val2[i])
-            diff = compute_diff(v1, v2)
 
+            diff = compute_diff(v1, v2)
             if diff > tolerance:
-                print(ST % (v1, i, diff * 100, v2))
+                print(ST % (v1, row, index_to_excel(i), diff * 100, v2))
 
 
 def main():
