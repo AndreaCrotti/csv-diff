@@ -5,7 +5,7 @@ from sys import argv, exit
 from string import ascii_uppercase
 import argparse
 
-ST = "Value %f in file 1 (row=%d, column=%s) differs by %d from %f in file 2"
+ST = "%f -> %f [%d, %s]"
 DEFAULT_SKIP_LINES = 1
 
 DEFAULT_TOLERANCE = 0.02
@@ -48,7 +48,7 @@ def analyze_csv_files(f1, f2, tolerance, skip_lines):
 
             diff = compute_diff(v1, v2)
             if diff > tolerance:
-                print(ST % (v1, row, index_to_excel(i), diff * 100, v2))
+                print(ST % (v1, v2, row, index_to_excel(i)))
 
 
 def main():
