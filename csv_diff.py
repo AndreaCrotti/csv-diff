@@ -42,13 +42,16 @@ def analyze_csv_files(f1, f2, tolerance, skip_lines):
         r1.next(); r2.next()
 
     # TODO: check if the number of elements are different somehow
-    for row, (val1, val2) in enumerate(izip(r1, r2)):
-        for i in range(len(val1)):
-            v1, v2 = float(val1[i]), float(val2[i])
+    for rowidx, (row1, row2) in enumerate(izip(r1, r2)):
+        # otherwise the files don't have the same fields
+        assert len(row1) == len(row2)
+
+        for colidx in range(len(row1)):
+            v1, v2 = float(row1[colidx]), float(row2[colidx])
 
             diff = compute_diff(v1, v2)
             if diff > tolerance:
-                print(ST % (v1, v2, row, index_to_excel(i)))
+                print(ST % (v1, v2, rowidx, index_to_excel(colidx)))
 
 
 def main():
@@ -66,6 +69,7 @@ def main():
 
     ns = parser.parse_args(argv[1:])
     analyze_csv_files(ns.files[0], ns.files[1], ns.tolerance, ns.skip)
+
 
 if __name__ == '__main__':
     main()
