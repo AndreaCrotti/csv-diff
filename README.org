@@ -1,0 +1,3 @@
+Compute the diffs between two big CSV files
+
+* TODO include PyQt as optional dependency to give also a graphical interface
