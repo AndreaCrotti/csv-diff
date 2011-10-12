@@ -7,7 +7,6 @@ import argparse
 
 ST = "%f -> %f [%d, %s]"
 DEFAULT_SKIP_LINES = 1
-
 DEFAULT_TOLERANCE = 0.02
 
 
@@ -29,6 +28,25 @@ def compute_diff(val1, val2):
     return abs(abs(val1 - val2) / val1)
 
 
+class ResultTuple(object):
+    def __init__(self, v1, v2, rowidx, colidx):
+        self.v1 = v1
+        self.v2 = v2
+        self.rowidx = rowidx
+        self.colidx = colidx
+
+    def __str__(self):
+        return self.format()
+
+    def format(self, excel=False):
+        if excel:
+            colidx = index_to_excel(self.colidx)
+        else:
+            colidx = self.colidx
+
+        return ST % (self.v1, self.v2, self.rowidx, colidx)
+
+
 def analyze_csv_files(f1, f2, tolerance, skip_lines):
     """Take two filenames and the tolerance and scan them through
     computing the diffs in the values
@@ -39,6 +57,7 @@ def analyze_csv_files(f1, f2, tolerance, skip_lines):
     for i in range(skip_lines):
         r1.next(); r2.next()
 
+    result = []
     # TODO: check if the number of elements are different somehow
     for rowidx, (row1, row2) in enumerate(izip(r1, r2)):
         # otherwise the files don't have the same fields
@@ -49,7 +68,14 @@ def analyze_csv_files(f1, f2, tolerance, skip_lines):
 
             diff = compute_diff(v1, v2)
             if diff > tolerance:
-                print(ST % (v1, v2, rowidx, index_to_excel(colidx)))
+                result.append(ResultTuple(v1, v2, rowidx, colidx))
+
+    return result
+
+
+def start_gui():
+    from PyQt4.QtGui import QApplication
+    pass
 
 
 def main():
@@ -65,9 +91,14 @@ def main():
                         default=DEFAULT_SKIP_LINES,
                         help='header rows to skip')
 
-    ns = parser.parse_args(argv[1:])
-    analyze_csv_files(ns.files[0], ns.files[1], ns.tolerance, ns.skip)
-
+    try:
+        ns = parser.parse_args(argv[1:])
+        results = analyze_csv_files(ns.files[0], ns.files[1], ns.tolerance, ns.skip)
+        for r in results:
+            print r.format(excel=True)
+    except:
+        # if the parsing didn't work then we need to fire up the GUI
+        start_gui()
 
 if __name__ == '__main__':
     main()
