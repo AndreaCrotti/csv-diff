@@ -70,6 +70,7 @@ def analyze_csv_files(f1, f2, tolerance, skip_lines):
             if diff > tolerance:
                 result.append(ResultTuple(v1, v2, rowidx, colidx))
 
+    #TODO: check what should be the mock object in testing this kind of code
     return result
 
 
@@ -84,7 +85,8 @@ def main():
                         default=DEFAULT_TOLERANCE,
                         help='tolerance needed')
 
-    parser.add_argument('-f', '--files', nargs=2,
+    parser.add_argument('files',
+                        nargs=2,
                         help='files to pass in as arguments')
 
     parser.add_argument('-s', '--skip',
