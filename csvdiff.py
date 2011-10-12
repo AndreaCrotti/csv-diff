@@ -86,6 +86,7 @@ def main():
                         help='tolerance needed')
 
     parser.add_argument('files',
+                        metavar='FILE',
                         nargs=2,
                         help='files to pass in as arguments')
 
